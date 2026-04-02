@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { PrismaService } from '../prisma.service';
@@ -10,9 +11,16 @@ export class ContactsService {
 
   // Prisma: crea un registro en la tabla Contact
   async create(createContactDto: CreateContactDto) {
-    return this.prisma.contact.create({
-      data: createContactDto, // Contiene 'name' y 'email' ya validados
-    });
+    try {
+      return await this.prisma.contact.create({
+        data: createContactDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('El correo electrónico ya está registrado.');
+      }
+      throw error;
+    }
   }
 
   async findAll() {
@@ -33,10 +41,17 @@ export class ContactsService {
   }
 
   async update(id: number, updateContactDto: UpdateContactDto) {
-    return this.prisma.contact.update({
-      where: { id },
-      data: updateContactDto,
-    });
+    try {
+      return await this.prisma.contact.update({
+        where: { id },
+        data: updateContactDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('El correo electrónico ya está registrado.');
+      }
+      throw error;
+    }
   }
 
   async remove(id: number) {
