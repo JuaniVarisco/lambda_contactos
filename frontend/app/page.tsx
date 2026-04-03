@@ -150,11 +150,8 @@ export default function ContactsPage() {
         {/* Header */}
         <header className="text-center space-y-3">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 drop-shadow-md animate-in slide-in-from-top-4 duration-700">
-            ContactFlow
+            Lambda Contactos
           </h1>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto font-light">
-            Tu directorio de contactos reimaginado. Rápido, elegante y potenciado por código.
-          </p>
         </header>
 
         {/* Sección 1: Formulario (Ahora ocupa el ancho de max-w-4xl horizontalmente o grid en desktop) */}
@@ -174,7 +171,7 @@ export default function ContactsPage() {
                 <input
                   id="name"
                   type="text"
-                  placeholder="Ej: Ada Lovelace"
+                  placeholder="Juani Varisco"
                   className={`w-full bg-slate-950/80 border ${
                     errors.name ? 'border-rose-500/60 focus:ring-rose-500/40' : 'border-indigo-500/20 focus:border-indigo-400 focus:ring-indigo-400/30'
                   } rounded-2xl px-5 py-3.5 text-white placeholder-slate-600 outline-none transition-all duration-300 focus:ring-4`}
@@ -194,7 +191,7 @@ export default function ContactsPage() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="ada@computing.org"
+                  placeholder="juanivarisco@gmail.com"
                   className={`w-full bg-slate-950/80 border ${
                     errors.email ? 'border-rose-500/60 focus:ring-rose-500/40' : 'border-indigo-500/20 focus:border-indigo-400 focus:ring-indigo-400/30'
                   } rounded-2xl px-5 py-3.5 text-white placeholder-slate-600 outline-none transition-all duration-300 focus:ring-4`}
