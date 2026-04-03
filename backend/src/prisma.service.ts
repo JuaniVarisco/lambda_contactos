@@ -8,15 +8,25 @@ import { PrismaPg } from '@prisma/adapter-pg';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
     // 1. Obtenemos la URL (con un fallback de seguridad para asegurar que nunca sea undefined)
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test?schema=public';
+    
+    // Detectamos si estamos apuntando a la base de datos local
+    const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+
+   // Armamos la configuración base
+    const poolConfig: any = { 
+      connectionString 
+    };
+    
+    // Si NO estamos en local, agregamos la configuración SSL para Render
+    if (!isLocal) {
+      poolConfig.ssl = {
+        rejectUnauthorized: false
+      };
+    }
     
     // 2. Creamos el pool de conexión nativo de Postgres
-    const pool = new Pool({ 
-      connectionString,
-      ssl: {
-        rejectUnauthorized: false,
-      }
-    });
+    const pool = new Pool(poolConfig);
     
     // 3. Lo envolvemos en el adaptador de Prisma
     const adapter = new PrismaPg(pool);
