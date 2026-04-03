@@ -150,7 +150,7 @@ export default function ContactsPage() {
         {/* Header */}
         <header className="text-center space-y-3">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 drop-shadow-md animate-in slide-in-from-top-4 duration-700">
-            Lambda Contactos
+            Lambda Contact Manager
           </h1>
         </header>
 

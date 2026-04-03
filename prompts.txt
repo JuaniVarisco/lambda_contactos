@@ -1,0 +1,122 @@
+Primero, utilice un prompt para crear la estructura del proyecto:
+Actua como un programador web senior con mas de 10 años de experiencia. Quiero hacer este proyecto, una pequeña aplicacion web. Es un test para una entrevista laboral. Primero quiero decidir que tecnologias usar, que me da recomendaciones en el propio pdf pero quiero que vos las analices y me expliques por encima en que se basan y cual deberia implementar en mi proyecto, para que quede una aplicacion optima y con buen performance, que sea de alta calidad. Luego, quiero que me organices el proyecto en pequeñas tareas de forma que pueda ir realizando de a poco el trabajo. Luego, voy a empezar a trabajarlo en antigravity, cuando deba empezar a escribir codigo, pero primero quiero tener una estructura y una planificacion del proyecto. 
+
+Luego, a partir de la estructura del proyecto, fui haciendo prompts por cada fase de desarrollo.
+
+Fase 1:
+"Actúa como un desarrollador web senior. Estoy iniciando un proyecto técnico que será un monorepo con un backend en NestJS y un frontend en Next.js. Quiero completar la fase inicial de infraestructura. Por favor, ejecuta las siguientes tareas en este directorio de trabajo:
+
+    Inicializa un repositorio de Git vacío.
+
+    Crea un archivo .gitignore genérico en la raíz, asegurándote de ignorar archivos de entorno (.env), carpetas de dependencias (node_modules), y archivos de logs.
+
+    Crea un archivo docker-compose.yml en la raíz del proyecto, pegando exactamente esta configuración para levantar la base de datos requerida:
+
+YAML
+
+version: "3.9"
+services:
+  mediafy-db:
+    image: postgres:16-alpine
+    container_name: test-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    ports:
+      - "5432:5432"
+    volumes:
+      - mediafy_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mediafy_pg_data:
+
+    Una vez creados los archivos, haz un git add . y un git commit -m "chore: initial project setup and docker-compose"."
+
+Fase 2:
+"Actúa como un desarrollador backend senior experto en Node.js, NestJS y Prisma. Estamos en la Fase 2 de nuestro proyecto para la prueba técnica (gestor de contactos). Quiero que ejecutes los comandos y generes el código necesario para construir la API REST. Por favor, sigue estos pasos secuencialmente en mi directorio actual:
+
+Paso 1: Inicialización
+
+    Crea un nuevo proyecto NestJS dentro de una carpeta llamada backend. Usa npm como gestor de paquetes. Asegúrate de configurarlo para no inicializar un nuevo repositorio git anidado, ya que estamos en un monorepo.
+
+    Una vez creado, entra a la carpeta backend e instala Prisma como dependencia de desarrollo (npm install -D prisma) y el cliente de Prisma (npm install @prisma/client).
+
+    Instala también las dependencias de validación: npm install class-validator class-transformer.
+
+Paso 2: Configuración de Base de Datos
+
+    Inicializa Prisma (npx prisma init).
+
+    Modifica el archivo .env generado en la carpeta backend para que la variable DATABASE_URL apunte a nuestro contenedor local: DATABASE_URL="postgresql://test:test@localhost:5432/test?schema=public"
+
+    Modifica el archivo prisma/schema.prisma. Asegúrate de que el provider del datasource sea "postgresql". Crea el siguiente modelo:
+
+Fragmento de código
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+    Ejecuta la migración inicial para crear la tabla en la base de datos: npx prisma migrate dev --name init.
+
+Paso 3: Lógica de la API
+
+    Genera un servicio global de Prisma para que NestJS pueda inyectarlo: crea un archivo prisma.service.ts en la carpeta src que extienda PrismaClient e implemente OnModuleInit.
+
+    Genera un recurso RESTful completo para los contactos usando el CLI de Nest: npx @nestjs/cli g resource contacts --no-spec (selecciona REST API y generar operaciones CRUD).
+
+    En src/contacts/dto/create-contact.dto.ts, define las propiedades name y email. Usa los decoradores @IsString(), @IsNotEmpty() para el nombre, y @IsEmail() para el correo importados de class-validator.
+
+    Implementa el ContactsService para que use el PrismaService. Debes crear los métodos para listar todos los contactos (findAll), crear un contacto (create) y eliminar un contacto por ID (remove).
+
+    Actualiza el ContactsController para exponer las rutas correspondientes a esos tres métodos (GET, POST, DELETE).
+
+    En el archivo src/main.ts, habilita CORS (app.enableCors()) para que el frontend pueda consumir la API, y configura el ValidationPipe global (app.useGlobalPipes(new ValidationPipe())) para que los DTOs funcionen.
+
+Fase 3:
+"Actúa como mi mentor técnico y desarrollador Frontend Senior experto en React y Next.js. Hemos terminado la API en NestJS y ahora vamos a ejecutar la Fase 3: Frontend.
+
+Quiero que generes el código y explícame detalladamente cada concepto de React (Hooks, Client Components, fetch) y TailwindCSS mientras realizas lo siguiente en la raíz de mi monorepo:
+
+Paso 1: Inicialización
+
+    Crea un nuevo proyecto Next.js ejecutando: npx create-next-app@latest frontend. Configúralo para usar TypeScript, ESLint, Tailwind CSS, y el App Router. Dile que NO use el directorio src (para mantenerlo estándar) y NO modifiques el alias de importación por defecto.
+
+    Entra a la carpeta frontend y crea un archivo .env.local. Agrega la variable NEXT_PUBLIC_API_URL=http://localhost:3000. Explícame por qué necesitamos el prefijo NEXT_PUBLIC_ en Next.js.
+
+Paso 2: Interfaz y Lógica (La Vista Principal)
+
+    Reemplaza el contenido de app/page.tsx. Agrega la directiva "use client" al principio y explícame por qué es necesaria aquí.
+
+    Crea un componente funcional moderno. Utiliza useState para manejar: la lista de contactos, los campos del formulario (name, email) y un término de búsqueda (search).
+
+    Utiliza useEffect para llamar a una función fetchContacts al montar el componente. Explícame cómo evitar bucles infinitos con el array de dependencias [].
+
+    Implementa las funciones asíncronas para interactuar con mi API de NestJS usando fetch:
+
+        fetchContacts: Hace un GET a ${process.env.NEXT_PUBLIC_API_URL}/contacts y guarda la respuesta en el estado.
+
+        handleCreate: Hace un POST. Explica cómo prevenir el comportamiento por defecto del formulario con e.preventDefault().
+
+        handleDelete: Hace un DELETE con el ID correspondiente.
+
+    Construye la interfaz usando clases de TailwindCSS para que quede una UI muy profesional y limpia:
+
+        Un título principal.
+
+        Un formulario arriba para agregar contactos (Nombre, Email, y botón Submit).
+
+        Una barra de búsqueda debajo del formulario para filtrar la lista en tiempo real basada en el nombre o el email.
+
+        Una tabla o grilla de tarjetas para listar los contactos filtrados, cada uno con un botón rojo elegante para 'Eliminar'.

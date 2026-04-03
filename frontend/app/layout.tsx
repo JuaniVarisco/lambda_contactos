@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lambda Contactos",
+  title: "Lambda Contact Manager",
   description: "Aplicación de gestión de contactos",
 };
 
